@@ -1,7 +1,7 @@
 const $=s=>document.querySelector(s);
 const day=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Madrid'}).format(new Date());
 const uid=()=>crypto.randomUUID();
-async function api(path,options={}){const response=await fetch('https://tiebreak-club-demo.bouncy-fly-7401.chatgpt.site'+path,{credentials:'omit',cache:'no-store',...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});let data;try{data=await response.json()}catch{throw new Error('No se pudo contactar con el servidor. Inténtalo de nuevo.')}if(!response.ok)throw new Error(data.error||'No se ha podido completar la operación.');return data;}
+async function api(path,options={}){const response=await fetch('https://tiebreak-restaurante.tiebreak-club-demo.workers.dev'+path,{credentials:'omit',cache:'no-store',...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});let data;try{data=await response.json()}catch{throw new Error('No se pudo contactar con el servidor. Inténtalo de nuevo.')}if(!response.ok)throw new Error(data.error||'No se ha podido completar la operación.');return data;}
 function toast(message){const result=$('#booking-result');if(result)result.textContent=message;}
 $('#booking [name=date]').min=day();$('#booking [name=date]').value=day();
 let submissionKey=null,submissionPayload=null;
