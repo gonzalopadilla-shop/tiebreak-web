@@ -1,5 +1,5 @@
 function initializeTiebreakMenu(){
-const menu=window.TIEBREAK_MENU;if(!menu)return;
+let menu=window.TIEBREAK_MENU;if(!menu)return;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const eur=v=>v.toLocaleString('es-ES',{style:'currency',currency:'EUR'});
 const normalize=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -24,12 +24,13 @@ function badge(key){const [name,color,shape]=icons[key];return `<button type="bu
 function draw(){filters.innerHTML=['Todo',...menu.categories].map(c=>`<button type="button" data-category="${esc(c)}" class="${c===selected?'active':''}" aria-pressed="${c===selected}">${esc(c)}</button>`).join('');
  const matches=menu.dishes.filter(d=>(selected==='Todo'||selected===d.category)&&normalize(d.name+' '+(d.description||'')+' '+d.category).includes(normalize(query)));
  document.querySelector('#menu-count').textContent=`${matches.length} ${matches.length===1?'plato':'platos'} · Tapa y ración cuando se indican en la carta`;
- root.innerHTML=menu.categories.map(c=>{const rows=matches.filter(d=>d.category===c);if(!rows.length)return '';return `<section class="menu-category"><div class="menu-category-title"><p class="eyebrow">TIE BREAK · LA CARTA</p><h3>${esc(c)}</h3></div><div class="menu-items">${rows.map(d=>`<article class="menu-item" data-dish="${d.id}"><div class="menu-item-main"><h4>${esc(d.name)}</h4>${d.description?`<p>${esc(d.description)}</p>`:''}<div class="allergen-row">${d.allergens.map(badge).join('')}${d.allergenReview?'<span class="allergen-review" title="Un símbolo rosa de la carta necesita confirmación del local.">Alérgeno por confirmar</span>':''}${d.allergenNote?`<span class="allergen-unspecified">${esc(d.allergenNote)}</span>`:''}</div></div><div class="menu-prices">${d.prices.map(([label,value])=>`<div><span>${esc(label)}</span><strong>${value===null?'Consultar':eur(value)}</strong></div>`).join('')}</div></article>`).join('')}</div></section>`}).join('')||'<p class="menu-empty">No encontramos ese plato. Prueba otro nombre o categoría.</p>';
+ root.innerHTML=menu.categories.map(c=>{const rows=matches.filter(d=>d.category===c);if(!rows.length)return '';return `<section class="menu-category"><div class="menu-category-title"><p class="eyebrow">TIE BREAK · LA CARTA</p><h3>${esc(c)}</h3></div><div class="menu-items">${rows.map(d=>`<article class="menu-item" data-dish="${esc(d.id)}">${d.image?`<img class="menu-dish-photo" src="${esc(d.image)}" alt="${esc(d.name)}" loading="lazy" decoding="async">`: ''}<div class="menu-item-main"><h4>${esc(d.name)}</h4>${d.description?`<p>${esc(d.description)}</p>`:''}<div class="allergen-row">${d.allergens.map(badge).join('')}${d.allergenReview?'<span class="allergen-review" title="Un símbolo rosa de la carta necesita confirmación del local.">Alérgeno por confirmar</span>':''}${d.allergenNote?`<span class="allergen-unspecified">${esc(d.allergenNote)}</span>`:''}</div></div><div class="menu-prices">${d.prices.map(([label,value])=>`<div><span>${esc(label)}</span><strong>${value===null?'Consultar':eur(value)}</strong></div>`).join('')}</div></article>`).join('')}</div></section>`}).join('')||'<p class="menu-empty">No encontramos ese plato. Prueba otro nombre o categoría.</p>';
 }
 filters.onclick=e=>{const button=e.target.closest('[data-category]');if(button){selected=button.dataset.category;draw();}};
 document.querySelector('#menu-search').oninput=e=>{query=e.target.value;draw();};
 document.querySelector('#allergen-legend').innerHTML=Object.keys(icons).map(k=>`<span class="legend-item">${badge(k)}<span>${icons[k][0]}</span></span>`).join('');
 document.querySelector('#carta').addEventListener('click',e=>{const button=e.target.closest('[data-allergen]');if(button){const name=icons[button.dataset.allergen][0];document.querySelector('#allergen-message').textContent=`${name}: indicado en la carta facilitada. Consulta con el personal en caso de alergia o intolerancia.`;}});
+window.addEventListener('tiebreak-menu-updated',()=>{menu=window.TIEBREAK_MENU;if(selected!=='Todo'&&!menu.categories.includes(selected))selected='Todo';draw();});
 draw();
 }
 if(window.TIEBREAK_MENU)initializeTiebreakMenu();
